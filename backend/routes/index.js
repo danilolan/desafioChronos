@@ -1,5 +1,7 @@
 const express = require("express");
+const db = require('../config/db')
 const router = express.Router();
+
 
 router.get("/", (req, res) => {
   res.send({ response: "I am alive" }).status(200);
@@ -8,35 +10,59 @@ router.get("/", (req, res) => {
 // ---------------- TABELA CLIENTS ------------------------ //
 
 router.get("/clients", (req, res) => {
-  const clients = {}
-
-  //INTEGRAÇÃO MYSQL // OBTER TABELA CLIENTS
-
-  res.send(clients);
+  (async () => {
+    const clients = await db.selectClients()
+    console.log('----SELECT * FROM clients----')
+    console.log(clients)
+    res.send(clients);
+  })()
 });
 
-router.post("/client", (req, res) => {
-  const client = req.body
-
-  //INTEGRAÇÃO MYSQL // ADICIONAR CLIENT NA TABELA CLIENTS
-
-  res.send(client);
+router.post("/clients", (req, res) => {
+  (async () =>{
+    const client = req.body
+    try{
+      await db.insertClient(client)
+      console.log('----INSERT INTO clients----')
+      res.send('Cliente inserido')
+    }
+    catch(err){
+      console.log('----ERRO----')
+      console.log(err)
+      res.send(err)
+    }
+  })()
 });
 
-router.put("/client", (req, res) => {
-  const client = req.body
-
-  //INTEGRAÇÃO MYSQL // ATUALIZAR CLIENT NA TABELA CLIENTS
-
-  res.send(client);
+router.put("/clients", (req, res) => {
+  (async () =>{
+    const client = req.body
+    try{
+      await db.updateClient(client)
+      console.log('----UPDATE clients----')
+      res.send('Cliente atualizado')
+    }
+    catch(err){
+      console.log('----ERRO----')
+      console.log(err)
+      res.send(err)
+    }
+  })()
 });
 
-router.delete("/client", (req, res) => {
-  const clientId = req.query.id
-
-  //INTEGRAÇÃO MYSQL // deletar client
-
-  res.send(clientId);
+router.delete("/clients", (req, res) => {
+  (async () =>{
+    const clientId = req.query.id
+    try{
+      await db.deleteClient(clientId)
+      console.log('----DELETE FROM clients----')
+      res.send('Cliente deletado')
+    }
+    catch(err){
+      console.log('----ERRO----')
+      console.log(err)
+    }
+  })()
 });
 
 //-----------------------------------------------------------

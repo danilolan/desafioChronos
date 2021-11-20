@@ -1,0 +1,33 @@
+.header{
+    background-color: #0008;
+    width: 100%;
+    height: max-content;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    top: 0;
+    border-bottom: 1px solid white;
+    a{
+        font-weight: 200;
+        text-decoration: none;
+        font-family: 'Montserrat', sans-serif;
+        padding: 20px 30px;
+        border: none;
+        background: none;
+        color: white;
+        font-size: 40px;
+        transition: 0.3s;
+        border-bottom: 2px solid transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &:hover{
+            background-color: #0007;
+            cursor: pointer;
+        }
+
+        img{
+            width: 40px;
+            height: 40px;
+        }
+    }
+}

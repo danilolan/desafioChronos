@@ -16,6 +16,12 @@ async function selectClients(){
     return rows;
 }
 
+async function selectClient(id){
+    const conn = await connect();
+    const [rows] = await conn.query(`SELECT * FROM clients WHERE id=${id};`);
+    return rows;
+}
+
 async function insertClient(client){
     const conn = await connect();
     const sql = 'INSERT INTO clients(nome,email,estado,cidade,hobbie) VALUES (?,?,?,?,?);';
@@ -36,4 +42,4 @@ async function deleteClient(id){
     return await conn.query(sql, id);
 }
 
-module.exports = {selectClients, insertClient, updateClient, deleteClient}
+module.exports = {selectClients, selectClient, insertClient, updateClient, deleteClient}

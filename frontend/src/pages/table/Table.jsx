@@ -1,35 +1,35 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import api from '../../api/api'
+import EditModal from '../../components/modal/editModal';
+import EditClient from '../edit/EditClient';
 import './table.scss'
 
 import editImg from '../../assets/edit.png'
 import deleteImg from '../../assets/delete.png'
 
-const data = [
-    {id: 1, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 2, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 3, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 4, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 5, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 6, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 7, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 8, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 9, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 10, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 12, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 13, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 14, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 15, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 16, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 17, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 18, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'},
-    {id: 19, nome: 'danilo', email: 'didohreculano@gmail.com', estado: 'Paraiva', cidade: 'Campina grande', hobbie: 'Musico'}
-]
+function initialState(){
+    return [{id: 14,nome: '',email: '',estado: '',cidade: '',hobbie: null}]
+}
+
+const numItemsPages = 5
 
 function Table(props) {
-    const numItemsPages = 5
-    const numPages = Math.ceil(data.length / numItemsPages)
-
     const [currentPage, setCurrentPage] = useState(1)
+    const [data, setData] = useState(initialState)
+    const [numPages, setNumPages] = useState(1)
+
+    const [editModalIsOpen, setEditModalIsOpen] = useState(false)
+    const [editId, setEditId] = useState(0)
+
+    useEffect(() => {
+        api.get('clients').then(resp => {
+            setData(resp.data)
+        })
+    }, []);
+    
+    useEffect(() => {
+        setNumPages(Math.ceil(data.length / numItemsPages))
+    }, [data]);
     
     function addCurrentPage(){
         if(currentPage === numPages) return      
@@ -41,6 +41,30 @@ function Table(props) {
         else setCurrentPage(currentPage - 1)
     }
 
+    function openEditModal(id){
+        setEditId(id)
+        setEditModalIsOpen(true)
+    }
+
+    function closeEditModal(){
+        setEditModalIsOpen(false)
+    }
+
+    function deleteClient(id){
+        console.log('Deletado')
+        api.delete(`/client?id=${id}`)
+        api.get('clients').then(resp => {
+            setData(resp.data)
+        })   
+    }
+
+    function clientUpdated(){
+        console.log('fechou')
+        api.get('clients').then(resp => {
+            setData(resp.data)
+        }) 
+        setEditModalIsOpen(false)
+    }
 
     function renderRows(){   
         const array = data.slice((currentPage * numItemsPages) - numItemsPages, (numItemsPages * currentPage))     
@@ -55,10 +79,10 @@ function Table(props) {
                     <td>{client.email}</td>
                     <td>{client.estado}</td>
                     <td>{client.cidade}</td>
-                    <td>{client.hobbie}</td>
+                    <td className='hobbie'>{client.hobbie ? client.hobbie : '-------'}</td>
                     <td className='action'>  
-                        <div className="edit"><img src={editImg} alt="loading..." /></div> 
-                        <div className="delete"> <img src={deleteImg} alt="loading..." /> </div>            
+                        <div onClick={e=>{openEditModal(client.id)}} className="edit"><img src={editImg} alt="loading..." /></div> 
+                        <div onClick={e=>{deleteClient(client.id)}} className="delete"> <img src={deleteImg} alt="loading..." /> </div>            
                     </td>
                 </tr>
             )
@@ -88,6 +112,13 @@ function Table(props) {
                 <label> {currentPage} - {numPages} </label>
                 <button className='next' onClick={e => addCurrentPage()}> ➜ </button>       
             </div>
+
+            <EditModal
+                isOpen = {editModalIsOpen}
+                click = {e => closeEditModal()}
+            >
+                <EditClient id={editId} clientUpdated={e => clientUpdated()}/>
+            </EditModal>
         </div>
      );
 }

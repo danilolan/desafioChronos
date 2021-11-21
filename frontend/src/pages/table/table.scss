@@ -15,6 +15,11 @@
             color: #000;
             font-weight: 500;
             tr{
+                .hobbie{
+                    word-break: break-word;
+                    max-width: 100px;
+                    font-size: 15px;
+                }
                 .action{
                     margin: 10px;
                     padding: 10px;

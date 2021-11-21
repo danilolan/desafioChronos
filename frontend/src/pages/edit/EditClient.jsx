@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Select from 'react-select'
+import axios from 'axios'
 import api from '../../api/api';
-import './add.scss'
+import './editclient.scss'
 
 import plus from '../../assets/plus.png'
 import minor from '../../assets/minor.png'
@@ -16,10 +17,31 @@ const options = [
     { value: 'esporte', label: 'Esporte' }
 ]
 
-function Add() {
+function EditClient(props) {
     const [values, setValues] = useState(initialState);
     const [numHobbies, setNumHobbies] = useState([true]);
     const [optionStates, setOptionStates] = useState(['']);
+
+    useEffect(() => {
+        api.get(`/client?id=${props.id}`).then(resp => {
+            setValues(resp.data[0])
+            try{
+                setOptionStates(resp.data[0].hobbie.toLowerCase().split(' '))
+            }
+            catch{
+                setOptionStates([''])
+            }
+        })
+    }, [props.id]);
+
+    useEffect(() => {
+        let arr = []
+        optionStates.map( option => {
+            if(option !== '') arr.push(true)
+            return option
+        })
+        setNumHobbies(arr)
+    }, [optionStates]);
 
     const maxNumHobbies = 3
 
@@ -35,11 +57,12 @@ function Add() {
         event.preventDefault()
 
         var data = {}
-        data = {...values, hobbie: optionStates.join(' ')}
+        data = {id: props.id, ...values, hobbie: optionStates.join(' ')}
         console.log(data)  
         // ENVIAR REQUISIÇÃO
-        api.post('/client', data).then( resp => {
+        axios.put('http://localhost:3001/client', data).then( resp => {
             console.log(resp.data)
+            props.clientUpdated()
         })
 
 
@@ -74,11 +97,12 @@ function Add() {
     }
     function subOption(){
         setNumHobbies(numHobbies.slice(0,-1))
-        optionStates.pop()
+        setOptionStates(optionStates.slice(0,-1))
+        console.log(optionStates)   
     }
 
     return ( 
-        <div className="add">
+        <div className="editclient">
             <form>
                 <div className="row">
                     <label>Nome:</label>
@@ -137,4 +161,4 @@ function Add() {
      );
 }
 
-export default Add;
+export default EditClient;

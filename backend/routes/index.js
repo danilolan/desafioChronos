@@ -9,6 +9,15 @@ router.get("/", (req, res) => {
 
 // ---------------- TABELA CLIENTS ------------------------ //
 
+router.get("/client", (req, res) => {
+  (async () => {
+    const client = await db.selectClient(req.query.id)
+    console.log('----SELECT * FROM clients WHERE id----')
+    console.log(client)
+    res.send(client);
+  })()
+});
+
 router.get("/clients", (req, res) => {
   (async () => {
     const clients = await db.selectClients()
@@ -18,7 +27,8 @@ router.get("/clients", (req, res) => {
   })()
 });
 
-router.post("/clients", (req, res) => {
+
+router.post("/client", (req, res) => {
   (async () =>{
     const client = req.body
     try{
@@ -34,7 +44,7 @@ router.post("/clients", (req, res) => {
   })()
 });
 
-router.put("/clients", (req, res) => {
+router.put("/client", (req, res) => {
   (async () =>{
     const client = req.body
     try{
@@ -50,7 +60,7 @@ router.put("/clients", (req, res) => {
   })()
 });
 
-router.delete("/clients", (req, res) => {
+router.delete("/client", (req, res) => {
   (async () =>{
     const clientId = req.query.id
     try{

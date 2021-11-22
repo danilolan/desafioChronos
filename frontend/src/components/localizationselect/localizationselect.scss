@@ -1,0 +1,21 @@
+.localizationselect{
+    display: flex;
+    color: #000;
+    .estado{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 20px;
+        label{
+            margin-right: 10px;
+        }
+    }
+    .cidade{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        label{
+            margin-right: 10px;
+        }
+    }
+}

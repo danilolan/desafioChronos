@@ -1,49 +1,41 @@
 import React, {useState, useEffect} from 'react';
-import Select from 'react-select'
 import axios from 'axios'
 import api from '../../api/api';
+import LocalizationSelect from '../../components/localizationselect/LocalizationSelect';
+import HobbiesSelect from '../../components/hobbiesselect/HobbiesSelect';
 import './editclient.scss'
-
-import plus from '../../assets/plus.png'
-import minor from '../../assets/minor.png'
 
 function initialState(){
     return {nome: '', email: '',estado: '', cidade: ''}
 }
 
-const options = [
-    { value: 'instrumento', label: 'Instrumento' },
-    { value: 'arte', label: 'Arte' },
-    { value: 'esporte', label: 'Esporte' }
-]
-
 function EditClient(props) {
     const [values, setValues] = useState(initialState);
-    const [numHobbies, setNumHobbies] = useState([true]);
-    const [optionStates, setOptionStates] = useState(['']);
+    const [hobbies, setHobbies] = useState(['']);
+    const [location, setLocation] = useState({})
+    
 
     useEffect(() => {
         api.get(`/client?id=${props.id}`).then(resp => {
             setValues(resp.data[0])
             try{
-                setOptionStates(resp.data[0].hobbie.toLowerCase().split(' '))
+                setHobbies(resp.data[0].hobbie.toLowerCase().split(' '))
+                setLocation({estado: resp.data[0].estado, cidade: resp.data[0].cidade})
             }
             catch{
-                setOptionStates([''])
+                setHobbies([''])
+                setLocation({})
             }
         })
     }, [props.id]);
 
     useEffect(() => {
         let arr = []
-        optionStates.map( option => {
+        hobbies.map( option => {
             if(option !== '') arr.push(true)
             return option
         })
-        setNumHobbies(arr)
-    }, [optionStates]);
-
-    const maxNumHobbies = 3
+    }, [hobbies]);
 
     function onChange(event){
         const {name, value} = event.target
@@ -57,7 +49,7 @@ function EditClient(props) {
         event.preventDefault()
 
         var data = {}
-        data = {id: props.id, ...values, hobbie: optionStates.join(' ')}
+        data = {id: props.id, ...values}
         console.log(data)  
         // ENVIAR REQUISIÇÃO
         axios.put('http://localhost:3001/client', data).then( resp => {
@@ -67,38 +59,14 @@ function EditClient(props) {
 
 
         setValues(initialState)
-        setNumHobbies([true])
     }
 
-    function renderHobbie(option,index){
-
-        function changeHandler(e){
-            var arr = [...optionStates]
-            arr[index] = e.value
-            setOptionStates(arr)
-            console.log(optionStates)
-        }
-
-        return (
-            <div key={index} className="select">
-                <Select                  
-                    options={options}
-                    value={options.find(item => item.value === option)}
-                    onChange={changeHandler}                  
-                />
-            </div>
-        )
-        
+    function getHobbies(hobbies){
+        setValues({...values, hobbie: hobbies.join(' ')})
     }
 
-    function addOption(){
-        if(numHobbies.length === maxNumHobbies) return
-        else setNumHobbies([...numHobbies, true])
-    }
-    function subOption(){
-        setNumHobbies(numHobbies.slice(0,-1))
-        setOptionStates(optionStates.slice(0,-1))
-        console.log(optionStates)   
+    function getLocation(estado, cidade){
+        setValues({...values, estado: estado, cidade: cidade})
     }
 
     return ( 
@@ -125,33 +93,17 @@ function EditClient(props) {
                 </div>
 
                 <div className="row location">
-                    <div className="estado">
-                        <label>Estado:</label>
-                        <input 
-                            type="text" 
-                            name="estado"
-                            value={values.estado}
-                            onChange={onChange}
-                        />
-                    </div>
-                    <div className="cidade">
-                        <label>Cidade:</label>
-                        <input 
-                            type="text" 
-                            name="cidade"
-                            value={values.cidade}
-                            onChange={onChange}
-                        />
-                    </div>
+                    <LocalizationSelect 
+                        getLocation={(estado,cidade) => getLocation(estado,cidade)}
+                        setLocation={location}
+                    />
                 </div>
 
                 <div className="row hobbie">
-                    <label>Hobbie(s):</label>
-                    {numHobbies.map((_, index) => (
-                        renderHobbie(optionStates[index], index)
-                    ))}
-                    <img src={plus} alt='loading...' onClick={e => addOption()}></img>
-                    <img src={minor} alt='loading...' onClick={e => subOption()}></img>
+                    <HobbiesSelect 
+                        getHobbies={(hobbies) => getHobbies(hobbies)}
+                        setHobbies={hobbies}
+                    />
                 </div>
 
                 <button onClick={onSubmit} >Enviar</button>

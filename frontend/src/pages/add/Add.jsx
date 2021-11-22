@@ -1,27 +1,18 @@
 import React, {useState} from 'react';
-import Select from 'react-select'
+
 import api from '../../api/api';
 import './add.scss'
 
-import plus from '../../assets/plus.png'
-import minor from '../../assets/minor.png'
+import LocalizationSelect from '../../components/localizationselect/LocalizationSelect';
+import HobbiesSelect from '../../components/hobbiesselect/HobbiesSelect';
 
 function initialState(){
     return {nome: '', email: '',estado: '', cidade: ''}
 }
 
-const options = [
-    { value: 'instrumento', label: 'Instrumento' },
-    { value: 'arte', label: 'Arte' },
-    { value: 'esporte', label: 'Esporte' }
-]
-
 function Add() {
     const [values, setValues] = useState(initialState);
-    const [numHobbies, setNumHobbies] = useState([true]);
-    const [optionStates, setOptionStates] = useState(['']);
-
-    const maxNumHobbies = 3
+    const [reset, setReset] = useState(false)
 
     function onChange(event){
         const {name, value} = event.target
@@ -35,46 +26,21 @@ function Add() {
         event.preventDefault()
 
         var data = {}
-        data = {...values, hobbie: optionStates.join(' ')}
+        data = {...values}
         console.log(data)  
-        // ENVIAR REQUISIÇÃO
         api.post('/client', data).then( resp => {
             console.log(resp.data)
         })
-
-
         setValues(initialState)
-        setNumHobbies([true])
+        setReset(true)
     }
 
-    function renderHobbie(option,index){
-
-        function changeHandler(e){
-            var arr = [...optionStates]
-            arr[index] = e.value
-            setOptionStates(arr)
-            console.log(optionStates)
-        }
-
-        return (
-            <div key={index} className="select">
-                <Select                  
-                    options={options}
-                    value={options.find(item => item.value === option)}
-                    onChange={changeHandler}                  
-                />
-            </div>
-        )
-        
+    function getHobbies(hobbies){
+        setValues({...values, hobbie: hobbies.join(' ')})
     }
 
-    function addOption(){
-        if(numHobbies.length === maxNumHobbies) return
-        else setNumHobbies([...numHobbies, true])
-    }
-    function subOption(){
-        setNumHobbies(numHobbies.slice(0,-1))
-        optionStates.pop()
+    function getLocation(estado, cidade){
+        setValues({...values, estado: estado, cidade: cidade})
     }
 
     return ( 
@@ -101,33 +67,17 @@ function Add() {
                 </div>
 
                 <div className="row location">
-                    <div className="estado">
-                        <label>Estado:</label>
-                        <input 
-                            type="text" 
-                            name="estado"
-                            value={values.estado}
-                            onChange={onChange}
-                        />
-                    </div>
-                    <div className="cidade">
-                        <label>Cidade:</label>
-                        <input 
-                            type="text" 
-                            name="cidade"
-                            value={values.cidade}
-                            onChange={onChange}
-                        />
-                    </div>
+                    <LocalizationSelect 
+                        getLocation={(estado,cidade) => getLocation(estado,cidade)}
+                        reset={reset}
+                    />
                 </div>
 
                 <div className="row hobbie">
-                    <label>Hobbie(s):</label>
-                    {numHobbies.map((_, index) => (
-                        renderHobbie(optionStates[index], index)
-                    ))}
-                    <img src={plus} alt='loading...' onClick={e => addOption()}></img>
-                    <img src={minor} alt='loading...' onClick={e => subOption()}></img>
+                    <HobbiesSelect 
+                        getHobbies={(hobbies) => getHobbies(hobbies)}
+                        reset={reset}
+                    />
                 </div>
 
                 <button onClick={onSubmit} >Enviar</button>

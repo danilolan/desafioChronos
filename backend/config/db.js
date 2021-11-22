@@ -42,4 +42,18 @@ async function deleteClient(id){
     return await conn.query(sql, id);
 }
 
-module.exports = {selectClients, selectClient, insertClient, updateClient, deleteClient}
+//----------------LOCALIZAÇÃO----------------------
+
+async function selectEstados(){
+    const conn = await connect();
+    const [rows] = await conn.query('SELECT * FROM estados');
+    return rows;
+}
+
+async function selectCidades(id){
+    const conn = await connect();
+    const [rows] = await conn.query(`SELECT * FROM cidades WHERE estado_id=${id}`);
+    return rows;
+}
+
+module.exports = {selectClients, selectClient, insertClient, updateClient, deleteClient, selectEstados, selectCidades}

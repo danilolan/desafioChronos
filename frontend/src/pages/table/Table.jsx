@@ -55,6 +55,7 @@ function Table(props) {
         api.delete(`/client?id=${id}`)
         api.get('clients').then(resp => {
             setData(resp.data)
+            document.location.reload(true)
         })   
     }
 

@@ -75,6 +75,25 @@ router.delete("/client", (req, res) => {
   })()
 });
 
-//-----------------------------------------------------------
+//-------------------ROTAS LOCALIZAÇÃO-------------------------
+
+router.get("/estados", (req, res) => {
+  (async () => {
+    const estados = await db.selectEstados()
+    console.log('----SELECT * FROM estados----')
+    console.log(estados)
+    res.send(estados);
+  })()
+});
+
+router.get("/cidades", (req, res) => {
+  (async () => {
+    const id = req.query.id
+    const cidades = await db.selectCidades(id)
+    console.log('----SELECT * FROM cidades WHERE id----')
+    console.log(cidades)
+    res.send(cidades);
+  })()
+});
 
 module.exports = router;

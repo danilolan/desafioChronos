@@ -9,9 +9,7 @@ function ResponseUi(props) {
 
     if(code !== 100) {
         isValid = false
-        console.log('erro')
     }
-    console.log(isValid)
 
     return (
         <div className='responseuicontainer'>

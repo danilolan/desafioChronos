@@ -5,15 +5,16 @@ import './hobbiesselect.scss'
 import plus from '../../assets/plus.png'
 import minor from '../../assets/minor.png'
 
-const options = [
-    { value: 'instrumento', label: 'Instrumento' },
-    { value: 'arte', label: 'Arte' },
-    { value: 'esporte', label: 'Esporte' }
-]
-
 const maxNumHobbies = 3
 
+const optionsInitialState = [
+    { value: 'Instrumento', label: 'Instrumento' },
+    { value: 'Arte', label: 'Arte' },
+    { value: 'Esporte', label: 'Esporte' }
+]
+
 function HobbiesSelect(props) {
+    const [options, setOptions] = useState(optionsInitialState);
     const [numHobbies, setNumHobbies] = useState([]);
     const [optionsHobbies, setOptionsHobbies] = useState(['']);
 
@@ -22,6 +23,7 @@ function HobbiesSelect(props) {
 
     useEffect(() => {
         getHobbies(optionsHobbies)
+
     }, [optionsHobbies]); 
 
     useEffect(() => {
@@ -43,12 +45,12 @@ function HobbiesSelect(props) {
             setOptionsHobbies([''])
         }
     }, [props.reset]);
-
     function renderHobbie(option,index){
 
         function changeHandler(e){
             var arr = [...optionsHobbies]
             arr[index] = e.value
+            arr = [...new Set(arr)]
             setOptionsHobbies(arr)
         }
 
@@ -56,7 +58,7 @@ function HobbiesSelect(props) {
             <div key={index} className="select">
                 <Select                  
                     options={options}
-                    value={options.find(item => item.value === option)}
+                    value={optionsHobbies[index] ? options.find(item => item.value === option) : ''}
                     onChange={changeHandler}                  
                 />
             </div>
@@ -72,9 +74,7 @@ function HobbiesSelect(props) {
         setNumHobbies(numHobbies.slice(0,-1))
         let arr = [...optionsHobbies]
         arr.pop()
-        console.log(arr)
         setOptionsHobbies(arr)
-        console.log(optionsHobbies)
     }
 
     return ( 

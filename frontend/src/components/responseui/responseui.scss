@@ -1,0 +1,31 @@
+.responseuicontainer{
+    position: absolute;
+    bottom: 0;
+    font-weight: 500;
+    margin-bottom: 15px;
+    
+    .responseui{
+        padding: 20px;
+        border-radius: 10px;
+        overflow: hidden;
+        .loadingbar{
+            height: 5px;
+            width: 100%;
+            background-color: #fff;
+            animation-name: loading;
+            animation-duration: 5s;
+            animation-timing-function: linear;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            border-radius: 10px;
+            margin: 0px 5px 3px 5px;
+        }
+
+    }
+}
+
+@keyframes loading {
+    from {width: 90%;}
+    to {width: 0%;}
+  }

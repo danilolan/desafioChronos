@@ -34,12 +34,13 @@ router.post("/client", (req, res) => {
     try{
       await db.insertClient(client)
       console.log('----INSERT INTO clients----')
-      res.send('Cliente inserido')
+      res.send({msg: 'Cliente inserido', code: 100})
     }
     catch(err){
       console.log('----ERRO----')
       console.log(err)
-      res.send(err)
+      if(err.code === 'ER_DUP_ENTRY') res.send({msg: 'Este cliente já está cadastrado', code: 200})
+      else res.send({msg: 'Tente novamente', code: 201})
     }
   })()
 });
@@ -50,12 +51,12 @@ router.put("/client", (req, res) => {
     try{
       await db.updateClient(client)
       console.log('----UPDATE clients----')
-      res.send('Cliente atualizado')
+      res.send({msg: 'Cliente atualizado', code: 100})
     }
     catch(err){
       console.log('----ERRO----')
       console.log(err)
-      res.send(err)
+      res.send({msg: 'Tente novamente', code: 200})
     }
   })()
 });
@@ -66,11 +67,12 @@ router.delete("/client", (req, res) => {
     try{
       await db.deleteClient(clientId)
       console.log('----DELETE FROM clients----')
-      res.send('Cliente deletado')
+      res.send({msg: 'Cliente deletado', code: 100})
     }
     catch(err){
       console.log('----ERRO----')
       console.log(err)
+      console.log({msg: 'Tente novamente', code: 200})
     }
   })()
 });

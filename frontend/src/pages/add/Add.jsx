@@ -50,7 +50,7 @@ function Add() {
     }
 
     function getHobbies(hobbies){
-        setValues({...values, hobbie: hobbies.join(' ')})
+        setValues({...values, hobbie: hobbies.join(', ')})
     }
 
     function getLocation(estado, cidade){

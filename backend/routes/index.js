@@ -31,16 +31,21 @@ router.get("/clients", (req, res) => {
 router.post("/client", (req, res) => {
   (async () =>{
     const client = req.body
-    try{
-      await db.insertClient(client)
-      console.log('----INSERT INTO clients----')
-      res.send({msg: 'Cliente inserido', code: 100})
+    if (!client.nome || !client.email || !client.estado || !client.cidade){
+      res.send({msg: 'Preencha os campos corretamente', code: 200})
     }
-    catch(err){
-      console.log('----ERRO----')
-      console.log(err)
-      if(err.code === 'ER_DUP_ENTRY') res.send({msg: 'Este cliente já está cadastrado', code: 200})
-      else res.send({msg: 'Tente novamente', code: 201})
+    else{
+      try{
+        await db.insertClient(client)
+        console.log('----INSERT INTO clients----')
+        res.send({msg: 'Cliente inserido', code: 100})
+      }
+      catch(err){
+        console.log('----ERRO----')
+        console.log(err)
+        if(err.code === 'ER_DUP_ENTRY') res.send({msg: 'Este cliente já está cadastrado', code: 201})
+        else res.send({msg: 'Tente novamente', code: 202})
+      }
     }
   })()
 });

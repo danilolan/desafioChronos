@@ -19,7 +19,7 @@ function EditClient(props) {
         api.get(`/client?id=${props.id}`).then(resp => {
             setValues(resp.data[0])
             try{
-                setHobbies(resp.data[0].hobbie.toLowerCase().split(' '))
+                setHobbies(resp.data[0].hobbie.split(', '))
                 setLocation({estado: resp.data[0].estado, cidade: resp.data[0].cidade})
             }
             catch{
@@ -49,11 +49,9 @@ function EditClient(props) {
         event.preventDefault()
 
         var data = {}
-        data = {id: props.id, ...values}
-        console.log(data)  
+        data = {id: props.id, ...values} 
         // ENVIAR REQUISIÇÃO
         axios.put('http://localhost:3001/client', data).then( resp => {
-            console.log(resp.data)
             props.clientUpdated()
         })
 
@@ -62,7 +60,7 @@ function EditClient(props) {
     }
 
     function getHobbies(hobbies){
-        setValues({...values, hobbie: hobbies.join(' ')})
+        setValues({...values, hobbie: hobbies.join(', ')})
     }
 
     function getLocation(estado, cidade){

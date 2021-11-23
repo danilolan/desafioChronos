@@ -1,9 +1,14 @@
 async function connect(){
     if(global.connection && global.connection.state !== 'disconnected')
         return global.connection;
+
+    const userSql = process.env.USER_SQL
+    const passwordSql = process.env.PASSWORD_SQL
+    const ipSql = process.env.IP_SQL
+    const portSql = process.env.PORT_SQL
  
     const mysql = require("mysql2/promise");
-    const connection = await mysql.createConnection("mysql://root:captain@localhost:3307/clients");
+    const connection = await mysql.createConnection(`mysql://${userSql}:${passwordSql}@${ipSql}:${portSql}/clients`);
     console.log("Conectou no MySQL!");
     global.connection = connection;
     return connection;

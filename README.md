@@ -56,6 +56,8 @@ git clone https://github.com/danilolan/desafioChronos
 - Importar o arquivo clientsDb.sql (selecionar clients no Target Schema) - guia: https://ajuda.hostnet.com.br/importacao-do-banco-via-mysql-workbench/
 - Iniciar servidor mysql
 
+### Configurar Server
+
 ```bash
 # entrar na pasta do projeto back end
 cd backend
